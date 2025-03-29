@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "457986555689",
+    "project_id": "db-app-b3f31",
+    "storage_bucket": "db-app-b3f31.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:457986555689:android:34d92e9a7517bd24f9c138",
+        "android_client_info": {
+          "package_name": "com.compose.meet_dating"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgKPSkW_WQlg-Sc9OlakBrfYLjm8MuSjE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
