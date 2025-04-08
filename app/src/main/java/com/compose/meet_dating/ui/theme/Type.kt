@@ -8,10 +8,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.compose.meet_dating.R
 
+
+// Define nunito Font Family
+val Nunito = FontFamily(
+    Font(R.font.nunito, FontWeight.Normal),
+    Font(R.font.nunito_medium, FontWeight.Medium)
+)
+
 // Set of Material typography styles to start with
-
-// Define Nunito Font Family
-
 val Typography = Typography(
     bodyLarge = TextStyle(
         fontFamily = FontFamily.Default,

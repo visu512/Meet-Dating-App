@@ -4,26 +4,21 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/app_logo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/app_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.MeetDatingApp"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.MeetDatingApp">
-        </activity>
-
-        <activity android:name=".main.Login"
+            android:name=".activity.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.MeetDatingApp">
@@ -35,22 +30,93 @@
         </activity>
 
         <activity
-            android:name=".main.RegisterScreen"
+            android:name=".activity.SplashActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.MeetDatingApp"/>
+            android:theme="@style/Theme.MeetDatingApp">
+
+        </activity>
+
+        <activity
+            android:name=".activity.Login"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MeetDatingApp">
+
+        </activity>
+
+        <activity
+            android:name=".activity.RegisterScreen"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MeetDatingApp" />
 
         <activity
             android:name=".main.UserActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.MeetDatingApp"/>
+            android:theme="@style/Theme.MeetDatingApp">
+
+        </activity>
 
         <activity
             android:name=".main.UserImageActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MeetDatingApp">
+
+        </activity>
+
+        <activity
+            android:name=".chats.ChatActivity"
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MeetDatingApp"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+
+        <activity
+            android:name=".activity.GenderActivity"
             android:exported="false"
             android:label="@string/app_name"
-            android:theme="@style/Theme.MeetDatingApp"/>
+            android:theme="@style/Theme.MeetDatingApp" />
+
+        <activity
+            android:name=".activity.GenderSelectionActivity"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MeetDatingApp" />
+        <activity
+            android:name=".activity.DOBActivity"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MeetDatingApp" />
+
+        <activity
+            android:name=".activity.LocationActivity"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MeetDatingApp" />
+
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MeetDatingApp" />
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
     </application>
 

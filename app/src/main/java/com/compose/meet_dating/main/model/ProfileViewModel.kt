@@ -5,21 +5,24 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.google.common.base.Verify
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import java.io.ByteArrayInputStream
+import java.lang.Boolean.getBoolean
 
 data class ProfileData(
-    val id: String,
-    val name: String,
-    val age: Int,
-    val location: String,
-    val base64Image: String?
+    var userId: String = "",
+    val name: String = "",
+    val age: Int = 0,
+    val email: String = "",
+    val location: String = "",
+    val base64Image: String? = null,
+    val gender: String = ""
+
 )
 
 class ProfileViewModel : ViewModel() {
@@ -29,32 +32,52 @@ class ProfileViewModel : ViewModel() {
     private val firestore = FirebaseFirestore.getInstance()
 
     init {
-        fetchProfiles()
+        fetchProfilesBasedOnPreference() // Automatically loads filtered profiles
     }
 
-    private fun fetchProfiles() {
-        viewModelScope.launch {
-            try {
-                val snapshot = firestore.collection("users").get().await()
-                val profilesList = snapshot.documents.mapNotNull { doc ->
-                    try {
-                        ProfileData(
-                            id = doc.id,
-                            name = doc.getString("username") ?: "Anonymous",
-                            age = doc.getLong("age")?.toInt() ?: 0,
-                            location = doc.getString("location") ?: "Unknown",
-                            base64Image = doc.getString("profileImage")
-                        )
-                    } catch (e: Exception) {
-                        Log.e("ProfileViewModel", "Error parsing profile", e)
-                        null
-                    }
+    fun fetchProfilesBasedOnPreference() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        firestore.collection("users").document(userId)
+            .get()
+            .addOnSuccessListener { document ->
+                val preference = document.getString("genderPreference") ?: "Everyone"
+                val usersRef = firestore.collection("users")
+
+                val query = when (preference) {
+                    "Women" -> usersRef.whereEqualTo("gender", "I’m a Woman")
+                    "Men" -> usersRef.whereEqualTo("gender", "I’m a Man")
+                    else -> usersRef // "Everyone" show
                 }
-                _profiles.value = profilesList
-            } catch (e: Exception) {
-                Log.e("ProfileViewModel", "Error fetching profiles", e)
+
+                query.get()
+                    .addOnSuccessListener { result ->
+                        val profilesList = result.documents
+                            .filter { it.id != userId } // Exclude current user
+                            .mapNotNull { doc ->
+                                try {
+                                    ProfileData(
+                                        userId = doc.id,
+                                        name = doc.getString("username") ?: "Anonymous",
+                                        age = doc.getLong("age")?.toInt() ?: 0,
+                                        email = doc.getString("email") ?: "Unknown",
+                                        location = doc.getString("location") ?: "Unknown",
+                                        base64Image = doc.getString("profileImage"),
+                                        gender = doc.getString("gender") ?: "",
+                                    )
+                                } catch (e: Exception) {
+                                    Log.e("ProfileViewModel", "Error parsing profile", e)
+                                    null
+                                }
+                            }
+
+                        _profiles.value = profilesList
+                        Log.d("ProfileViewModel", "Filtered Profiles: ${_profiles.value}")
+                    }
+                    .addOnFailureListener {
+                        Log.e("ProfileViewModel", "Error fetching filtered profiles", it)
+                    }
             }
-        }
     }
 
     fun decodeBase64ToBitmap(base64: String): Bitmap? {
@@ -66,4 +89,56 @@ class ProfileViewModel : ViewModel() {
             null
         }
     }
+
+    fun fetchUserProfile(userEmail: String) {
+        if (userEmail.isEmpty()) return
+
+        firestore.collection("users")
+            .whereEqualTo("email", userEmail)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val userProfile = snapshot.documents.firstOrNull()?.let { doc ->
+                    ProfileData(
+                        userId = doc.id,
+                        name = doc.getString("username") ?: "Anonymous",
+                        age = doc.getLong("age")?.toInt() ?: 0,
+                        email = doc.getString("email") ?: "Unknown",
+                        location = doc.getString("location") ?: "Unknown",
+                        base64Image = doc.getString("profileImage"),
+                        gender = doc.getString("gender") ?: "",
+
+                        )
+                }
+
+                userProfile?.let {
+                    _profiles.value = listOf(it)
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("ProfileViewModel", "Failed to fetch user profile", e)
+            }
+    }
+
+//    fun fetchCurrentUserProfile() {
+//        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+//
+//        firestore.collection("users").document(userId)
+//            .get()
+//            .addOnSuccessListener { doc ->
+//                val profile = ProfileData(
+//                    id = doc.id,
+//                    name = doc.getString("username") ?: "Anonymous",
+//                    age = doc.getLong("age")?.toInt() ?: 0,
+//                    email = doc.getString("email") ?: "Unknown",
+//                    location = doc.getString("location") ?: "Unknown",
+//                    base64Image = doc.getString("profileImage"),
+//                    gender = doc.getString("gender") ?: ""
+//                )
+//                _profiles.value = listOf(profile)
+//            }
+//            .addOnFailureListener {
+//                Log.e("ProfileViewModel", "Failed to fetch current user profile", it)
+//            }
+//    }
+
 }

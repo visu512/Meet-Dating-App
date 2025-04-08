@@ -14,8 +14,10 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
@@ -23,14 +25,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.compose.meet_dating.MainActivity
+import com.compose.meet_dating.R
+import com.compose.meet_dating.activity.MainActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -63,7 +71,7 @@ class UserImageActivity : ComponentActivity() {
                 onSelectImage = { selectImageLauncher.launch("image/*") },
                 onComplete = {
                     startActivity(Intent(this, MainActivity::class.java))
-//                    finish()
+                    finish()
                 }
             )
         }
@@ -77,66 +85,114 @@ fun UserImageScreen(
     onComplete: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val context = LocalContext.current
+    var name by remember { mutableStateOf("") }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(32.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFFFFFBFA),
+                        Color(0xFFFFFBFA)
+                    )
+                )
+            )
+            .padding(24.dp)
     ) {
-        // Profile image display
-        Box(
+        Column(
             modifier = Modifier
-                .size(150.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-            contentAlignment = Alignment.Center
+                .fillMaxSize()
+                .padding(bottom = 72.dp), // space for bottom button
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            when {
-                uiState.bitmap != null -> {
-                    Image(
-                        bitmap = uiState.bitmap!!.asImageBitmap(),
-                        contentDescription = "Profile image",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
+
+            Text(
+                text = "Let's make a stunning first impression!",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFFB00020),
+                textAlign = TextAlign.Start,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "choose your best photo, your profile will be visible to all members for matching 💘",
+                fontSize = 16.sp,
+                color = Color.DarkGray,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+
+            Box(
+                modifier = Modifier
+                    .size(200.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(Color.White)
+                    .border(2.dp, Color.Black, RoundedCornerShape(20.dp)) // Black border
+                    .clickable { onSelectImage() },
+                contentAlignment = Alignment.Center,
+
+            ) {
+                when {
+                    uiState.bitmap != null -> {
+                        Image(
+                            bitmap = uiState.bitmap!!.asImageBitmap(),
+                            contentDescription = "Profile image",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+
+                    uiState.isLoading -> {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(48.dp),
+                            color = Color(0xFFB00020)
+                        )
+                    }
+
+                    else -> {
+                        Icon(
+                            painter = painterResource(id = R.drawable.user),
+                            contentDescription = "Profile placeholder",
+                            modifier = Modifier.size(80.dp),
+                            tint = Color.Gray,
+                        )
+                    }
                 }
-                uiState.isLoading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(48.dp),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-                else -> {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "Profile placeholder",
-                        modifier = Modifier.size(80.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+            }
+
+            if (uiState.errorMessage.isNotEmpty()) {
+                Text(
+                    text = uiState.errorMessage,
+                    color = Color.Red,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Select Image Button
-        Button(
-            onClick = onSelectImage,
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !uiState.isLoading
-        ) {
-            Text("Select Image")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Continue Button
+        // Bottom Button
         Button(
             onClick = { viewModel.uploadImage(onComplete) },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .height(56.dp),
+            shape = RoundedCornerShape(30.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Black,
+                contentColor = Color.White,
+                disabledContentColor = Color.White,
+                disabledContainerColor = Color.Black
+            ),
             enabled = uiState.bitmap != null && !uiState.isLoading
         ) {
             if (uiState.isLoading) {
@@ -145,20 +201,12 @@ fun UserImageScreen(
                     modifier = Modifier.size(24.dp)
                 )
             } else {
-                Text("Continue")
+                Text("Upload Photo", fontSize = 18.sp, fontWeight = FontWeight.Normal)
             }
-        }
-
-        // Error message
-        if (uiState.errorMessage.isNotEmpty()) {
-            Text(
-                text = uiState.errorMessage,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(top = 16.dp)
-            )
         }
     }
 }
+
 
 class UserImageViewModel(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
@@ -211,27 +259,19 @@ class UserImageViewModel(
 
         viewModelScope.launch {
             try {
-                // Save to Firestore
-                val userData = hashMapOf(
-                    "profileImage" to imageBase64,
-                    "lastUpdated" to System.currentTimeMillis()
-                )
-
                 firestore.collection("users")
                     .document(currentUser.uid)
-                    .update(userData.toMap())
+                    .update(mapOf("profileImage" to imageBase64))
                     .await()
 
                 onComplete()
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
-                        errorMessage = "Upload failed: ${e.localizedMessage ?: "Unknown error"}",
+                        errorMessage = "Upload failed: ${e.localizedMessage}",
                         isLoading = false
                     )
                 }
-            } finally {
-                _uiState.update { it.copy(isLoading = false) }
             }
         }
     }
