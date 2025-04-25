@@ -1,6 +1,5 @@
 package com.compose.meet_dating.activity
 
-import ChatViewModel
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -18,6 +17,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -38,6 +40,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.compose.meet_dating.R
 import com.compose.meet_dating.chats.ChatActivity
+import com.compose.meet_dating.main.ChatViewModel
 import com.compose.meet_dating.main.model.LikedProfilesViewModel
 import com.compose.meet_dating.main.model.ProfileData
 import com.compose.meet_dating.main.model.ProfileViewModel
@@ -80,7 +83,10 @@ fun MainScreen() {
 
                 1 -> {
                     val chatViewModel: ChatViewModel = viewModel()
-                    ChatScreen(viewModel = chatViewModel, navController = NavController)
+                    ChatScreen(
+                        viewModel = chatViewModel,
+                        navController = NavController(LocalContext.current)
+                    )
                 }
 
                 2 -> LikeScreen(likedProfilesViewModel)
@@ -90,44 +96,68 @@ fun MainScreen() {
     }
 }
 
-
 @Composable
 fun FilterBottomSheetContent(
-    onOptionSelected: (String) -> Unit
+    onClose: () -> Unit,
+    onApply: () -> Unit
 ) {
-    val options = listOf("Nearby", "Show only men", "Show only women", "Show everyone")
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 24.dp, horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(24.dp),
+        horizontalAlignment = Alignment.Start
     ) {
-        Text(
-            "Filter Options",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        options.forEach { option ->
-            Button(
-                onClick = { onOptionSelected(option) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 6.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFf0f0f0),
-                    contentColor = Color.Black
-                ),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(option, fontSize = 16.sp)
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Filter", style = MaterialTheme.typography.titleLarge)
+            IconButton(onClick = onClose) {
+                Icon(
+                    Icons.Default.Close,
+                    tint = Color(0xFF616161),
+                    contentDescription = "Close"
+                )
             }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Example filters
+        FilterOption("Nearby")
+        FilterOption("Show only men")
+        FilterOption("Show only women")
+        FilterOption("Show everyone")
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = {
+                onApply()
+                onClose()
+            },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text("Apply")
         }
     }
 }
 
+@Composable
+fun FilterOption(option: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = Color.Gray)
+        Spacer(modifier = Modifier.width(12.dp))
+        Text(option, style = MaterialTheme.typography.bodyLarge)
+    }
+}
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -142,33 +172,16 @@ fun EncounterScreen(
     val sheetState = rememberModalBottomSheetState()
     var showSheet by remember { mutableStateOf(false) }
 
-    if (showSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showSheet = false },
-            sheetState = sheetState,
-            shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-            containerColor = Color.White
-        ) {
-            FilterBottomSheetContent(
-                onOptionSelected = { selected ->
-                    showSheet = false
-                    // Apply filter logic here
-                }
-            )
-        }
-    }
-
-    ///top bar
     Column(modifier = modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, top = 45.dp,),
+                .padding(start = 16.dp, end = 16.dp, top = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                "Meet",
+                "Matches",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 fontSize = 26.sp
@@ -183,7 +196,10 @@ fun EncounterScreen(
         }
 
         if (profiles.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
                 CircularProgressIndicator()
             }
         } else {
@@ -206,17 +222,35 @@ fun EncounterScreen(
             }
         }
     }
+
+    if (showSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showSheet = false },
+            sheetState = sheetState,
+            shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+            containerColor = Color.White,
+            dragHandle = { BottomSheetDefaults.DragHandle() }
+        ) {
+            FilterBottomSheetContent(
+                onClose = { showSheet = false },
+                onApply = {
+                    // Handle filter application here
+                }
+            )
+        }
+    }
 }
 
 @Composable
 fun ProfileCard(profile: ProfileData, likedProfilesViewModel: LikedProfilesViewModel) {
     val bitmap = profile.base64Image?.let { decodeBase64ToBitmap(it) }
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
-            .aspectRatio(2.45f / 4f) // height ,width
+            .padding(horizontal = 16.dp, vertical = 50.dp)
+            .aspectRatio(2.4f / 4f)/// height, width
             .border(
                 width = 1.dp,
                 color = Color.LightGray,
@@ -272,19 +306,18 @@ fun ProfileCard(profile: ProfileData, likedProfilesViewModel: LikedProfilesViewM
         // User details
         Column(
             modifier = Modifier
-                .padding(start = 8.dp, top = 8.dp)
+                .padding(start = 10.dp, top = 10.dp)
                 .align(Alignment.TopStart),
             verticalArrangement = Arrangement.spacedBy(2.dp),
             horizontalAlignment = Alignment.Start
         ) {
             Text(
-                text = "${profile.name}, ${profile.age}",
+                text = "${profile.name}, ${profile.age}",/// name + age
                 color = Color.White,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Medium
             )
 
-            val context = LocalContext.current
             Surface(
                 shape = RoundedCornerShape(14.dp),
                 color = Color.White,
@@ -300,23 +333,18 @@ fun ProfileCard(profile: ProfileData, likedProfilesViewModel: LikedProfilesViewM
                         val intent = Intent(context, ChatActivity::class.java).apply {
                             putExtra("name", profile.name)
                             putExtra("profileImageUri", imageUri?.toString())
-                            putExtra("senderId", currentUserId) // Current user (YOU)
-                            putExtra(
-                                "receiverId",
-                                profile.userId
-                            ) // The other person you're chatting with
+                            putExtra("senderId", currentUserId)
+                            putExtra("receiverId", profile.userId)
                         }
                         context.startActivity(intent)
                     }
-
-
             ) {
                 Text(
                     text = "Open to chat",
                     color = Color.Black,
                     fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 1.5.dp)
                 )
             }
 
@@ -365,7 +393,7 @@ fun ProfileCard(profile: ProfileData, likedProfilesViewModel: LikedProfilesViewM
                     .background(Color.White)
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.heart),
+                    painter = painterResource(id = R.drawable.lovess),
                     contentDescription = "Like",
                     tint = Color.Black,
                     modifier = Modifier.size(30.dp)
@@ -375,8 +403,6 @@ fun ProfileCard(profile: ProfileData, likedProfilesViewModel: LikedProfilesViewM
     }
 }
 
-
-/// helper function for resolve image sending to chat activity problem
 fun saveBase64ToImageUri(context: Context, base64: String): Uri? {
     return try {
         val bytes = Base64.decode(base64, Base64.DEFAULT)
@@ -394,7 +420,6 @@ fun saveBase64ToImageUri(context: Context, base64: String): Uri? {
     }
 }
 
-
 fun decodeBase64ToBitmap(base64Str: String): Bitmap? {
     return try {
         val decodedBytes = Base64.decode(base64Str, Base64.DEFAULT)
@@ -405,24 +430,21 @@ fun decodeBase64ToBitmap(base64Str: String): Bitmap? {
     }
 }
 
-////// bottom nav bar
 @Composable
 fun BottomNavigationBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
     Box(modifier = Modifier.height(58.dp)) {
         Column(modifier = Modifier.fillMaxSize()) {
-            // Top gray divider line
             Divider(
                 color = Color.LightGray,
                 thickness = 0.245.dp,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // BottomNavigationBar with transparent selection background
             NavigationBar(
                 modifier = Modifier.fillMaxSize(),
                 containerColor = Color.White,
                 contentColor = Color.Black,
-                tonalElevation = 0.dp // Remove elevation effect
+                tonalElevation = 0.dp
             ) {
                 NavigationBarItem(
                     selected = selectedTab == 0,
@@ -431,20 +453,20 @@ fun BottomNavigationBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
                         Icon(
                             painter = painterResource(id = R.drawable.cardswap),
                             contentDescription = "Meet",
-                            tint = if (selectedTab == 0) Color.Black else Color.Gray,
-                            modifier = Modifier.size(24.dp)
+                            tint = if (selectedTab == 0) Color.Black else Color(0xFF797878),
+                            modifier = Modifier.size(23.dp)
                         )
                     },
                     label = {
                         Text(
-                            "Meet",
+                            "Matches",
                             fontWeight = FontWeight.Normal,
-                            color = if (selectedTab == 0) Color.Black else Color.Gray
+                            color = if (selectedTab == 1) Color.Black else Color(0xFF616161)
                         )
                     },
                     alwaysShowLabel = true,
                     colors = NavigationBarItemDefaults.colors(
-                        indicatorColor = Color.Transparent // Removes the purple background
+                        indicatorColor = Color.Transparent
                     )
                 )
 
@@ -453,17 +475,18 @@ fun BottomNavigationBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
                     onClick = { onTabSelected(1) },
                     icon = {
                         Icon(
-                            painter = painterResource(id = R.drawable.chat),
+                            painter = painterResource(id = R.drawable.typing
+                        ),
                             contentDescription = "Chats",
-                            tint = if (selectedTab == 1) Color.Black else Color.Gray,
-                            modifier = Modifier.size(23.dp)
+                            tint = if (selectedTab == 1) Color.Black else Color(0xFF616161),
+                            modifier = Modifier.size(22.dp)
                         )
                     },
                     label = {
                         Text(
                             "Chats",
                             fontWeight = FontWeight.Normal,
-                            color = if (selectedTab == 1) Color.Black else Color.Gray
+                            color = if (selectedTab == 1) Color.Black else Color(0xFF616161)
                         )
                     },
                     alwaysShowLabel = true,
@@ -477,17 +500,17 @@ fun BottomNavigationBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
                     onClick = { onTabSelected(2) },
                     icon = {
                         Icon(
-                            painter = painterResource(id = R.drawable.heart),
+                            painter = painterResource(id = R.drawable.lovess),
                             contentDescription = "Likes",
-                            tint = if (selectedTab == 2) Color.Black else Color.Gray,
-                            modifier = Modifier.size(23.dp)
+                            tint = if (selectedTab == 2) Color.Black else Color(0xFF616161),
+                            modifier = Modifier.size(22.dp)
                         )
                     },
                     label = {
                         Text(
                             "Likes",
                             fontWeight = FontWeight.Normal,
-                            color = if (selectedTab == 2) Color.Black else Color.Gray
+                            color = if (selectedTab == 2) Color.Black else Color(0xFF616161)
                         )
                     },
                     alwaysShowLabel = true,
@@ -503,15 +526,15 @@ fun BottomNavigationBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
                         Icon(
                             painter = painterResource(id = R.drawable.user),
                             contentDescription = "Profile",
-                            tint = if (selectedTab == 3) Color.Black else Color.Gray,
-                            modifier = Modifier.size(23.dp)
+                            tint = if (selectedTab == 3) Color.Black else Color(0xFF616161),
+                            modifier = Modifier.size(22.dp)
                         )
                     },
                     label = {
                         Text(
                             "Profile",
                             fontWeight = FontWeight.Normal,
-                            color = if (selectedTab == 3) Color.Black else Color.Gray
+                            color = if (selectedTab == 3) Color.Black else Color(0xFF616161)
                         )
                     },
                     alwaysShowLabel = true,
@@ -523,7 +546,6 @@ fun BottomNavigationBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

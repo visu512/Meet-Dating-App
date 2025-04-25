@@ -100,6 +100,9 @@ dependencies {
     // Shimmer Effect
     implementation("com.valentinilk.shimmer:compose-shimmer:1.3.0")
 
+    implementation ("androidx.compose.animation:animation:1.5.0")
+    implementation ("androidx.compose.animation:animation-graphics:1.5.0")
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -65,7 +65,7 @@ fun GenderSelectionScreen(onSuccess: () -> Unit) {
                 fontSize = 22.sp,
                 fontWeight = FontWeight.ExtraBold,
                 fontFamily = Nunito,
-                color = Color(0xFFB00020),
+                color = Color(0xFF000000),
                 textAlign = TextAlign.Start,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -99,8 +99,7 @@ fun GenderSelectionScreen(onSuccess: () -> Unit) {
                     Text(
                         text = option,
                         fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = Nunito,
+                        fontWeight = FontWeight.SemiBold,
 //                        color = Color.White
                     )
                 }
@@ -145,7 +144,7 @@ fun GenderSelectionScreen(onSuccess: () -> Unit) {
             } else {
                 Text(
                     text = "Continue",
-                    fontSize = 18.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Normal,
                 )
             }

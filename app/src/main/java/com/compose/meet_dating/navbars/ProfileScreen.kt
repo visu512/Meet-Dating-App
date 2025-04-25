@@ -20,13 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.compose.meet_dating.activity.Login
+import com.compose.meet_dating.activity.LoginActivity
 import com.compose.meet_dating.activity.SettingsActivity
 import com.compose.meet_dating.main.model.ProfileViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -43,6 +42,7 @@ fun ProfileScreen(modifier: Modifier = Modifier, viewModel: ProfileViewModel = P
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
+    val currentProfile by viewModel.currentUserProfile.collectAsState()
     val profiles by viewModel.profiles.collectAsState()
     val profile = profiles.firstOrNull()
     var showLogoutDialog by remember { mutableStateOf(false) }
@@ -65,18 +65,18 @@ fun ProfileScreen(modifier: Modifier = Modifier, viewModel: ProfileViewModel = P
             }
         )
 
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
+
             // Profile Header
             ProfileHeaderSection(
-                name = profile?.name ?: "Guest",
-                age = "24",
-                imageUrl = profile?.base64Image,
+                name = currentProfile?.username ?: currentUser?.displayName ?: "Guest",
+                age = currentProfile?.age ?: 0,
+                imageUrl = currentProfile?.base64Image,
                 email = currentUser?.email ?: "No email available"
             )
 
@@ -161,7 +161,7 @@ fun ProfileScreen(modifier: Modifier = Modifier, viewModel: ProfileViewModel = P
                         googleSignInClient.signOut().addOnCompleteListener {
                             googleSignInClient.revokeAccess().addOnCompleteListener {
                                 auth.signOut()
-                                context.startActivity(Intent(context, Login::class.java))
+                                context.startActivity(Intent(context, LoginActivity::class.java))
                                 (context as Activity).finish()
                             }
                         }
@@ -181,7 +181,7 @@ fun ProfileScreen(modifier: Modifier = Modifier, viewModel: ProfileViewModel = P
 
 
 @Composable
-fun ProfileHeaderSection(name: String, age: String, imageUrl: String?, email: String) {
+fun ProfileHeaderSection(name: String, age: Int, imageUrl: String?, email: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

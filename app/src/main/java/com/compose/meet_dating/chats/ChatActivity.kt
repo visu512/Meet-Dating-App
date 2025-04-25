@@ -30,6 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.compose.meet_dating.R
@@ -163,7 +164,7 @@ fun ChatScreen(contactName: String, profileBitmap: Bitmap?, senderId: String, re
                             modifier = Modifier
                                 .size(48.dp)
                                 .clip(CircleShape)
-                                .border(1.dp, Color.Gray, CircleShape),
+                                .border(1.dp, Color.LightGray, CircleShape),
                             contentScale = ContentScale.Crop
                         )
                     } ?: Icon(
@@ -172,23 +173,24 @@ fun ChatScreen(contactName: String, profileBitmap: Bitmap?, senderId: String, re
                         modifier = Modifier
                             .size(48.dp)
                             .clip(CircleShape)
-                            .border(1.dp, Color.Gray, CircleShape)
+                            .border(0.5.dp, Color.LightGray, CircleShape)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Column {
-                        Text(text = contactName, fontSize = 17.sp)
+                        Text(text = contactName, fontSize = 17.sp, color = Color.Black)
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(
                                 modifier = Modifier
                                     .size(8.dp)
                                     .clip(CircleShape)
-                                    .background(if (isReceiverOnline) Color.Green else Color.Gray)
+                                    .background(if (isReceiverOnline) Color(0xFF006400) else Color.Gray)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
                                 text = if (isReceiverOnline) "Online" else "Offline",
                                 fontSize = 12.sp,
-                                color = if (isReceiverOnline) Color.Green else Color.Gray
+                                fontWeight = FontWeight.Bold,
+                                color = if (isReceiverOnline) Color(0xFF006400) else Color.Gray
                             )
                         }
                     }
@@ -293,7 +295,7 @@ fun MessageBubble(message: ChatMessage, isMe: Boolean, onLongPress: () -> Unit) 
             modifier = Modifier
                 .wrapContentSize()
                 .clip(RoundedCornerShape(12.dp))
-                .background(if (isMe) Color(0xFFDCF8C6) else Color(0xFFECECEC))
+                .background(if (isMe) Color(0xFF03A9F4) else Color(0xFF03A9F4))
                 .padding(10.dp)
                 .pointerInput(Unit) {
                     detectTapGestures(onLongPress = { onLongPress() })

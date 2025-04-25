@@ -78,11 +78,11 @@ fun UserScreen(
             verticalArrangement = Arrangement.Top
         ) {
             Text(
-                text = "💖 What's your name?",
+                text = "What's your name?",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.ExtraBold,
                 fontFamily = Nunito,
-                color = Color(0xFFB00020),
+                color = Color(0xFF000000),
                 textAlign = TextAlign.Start
             )
 
@@ -103,16 +103,16 @@ fun UserScreen(
                 onValueChange = { viewModel.updateUsername(it.trim()) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(60.dp),
+                    .height(55.dp),
                 placeholder = {
                     Text(
-                        "Enter your name...",
-                        fontSize = 16.sp,
-                        color = Color.Gray,
+                        "Your Name",
+                        fontSize = 20.sp,
+                        color = Color.Black,
                     )
                 },
                 textStyle = TextStyle(
-                    fontSize = 18.sp,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Normal,
                     color = Color.Black
                 ),
@@ -120,9 +120,9 @@ fun UserScreen(
                 shape = RoundedCornerShape(14.dp),
                 keyboardOptions = KeyboardOptions.Default,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color(0xFFB00020),
-                    unfocusedBorderColor = Color(0xFFB00020),
-                    cursorColor = Color(0xFFB00020),
+                    focusedBorderColor = Color(0xFF000000),
+                    unfocusedBorderColor = Color(0xFF000000),
+                    cursorColor = Color(0xFF000000),
                     containerColor = Color.White
                 )
             )
@@ -159,7 +159,7 @@ fun UserScreen(
                 } else {
                     Text(
                         text = "Continue",
-                        fontSize = 18.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Normal
                     )
                 }
@@ -168,7 +168,7 @@ fun UserScreen(
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = "Your name helps others recognize you 🧡",
+                text = "Your name helps others recognize you!",
                 fontSize = 14.sp,
                 color = Color.DarkGray,
                 textAlign = TextAlign.Center,

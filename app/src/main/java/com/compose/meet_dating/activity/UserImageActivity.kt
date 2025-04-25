@@ -109,10 +109,10 @@ fun UserImageScreen(
         ) {
 
             Text(
-                text = "Let's make a stunning first impression!",
+                text = "Make your first impression picture-perfect",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFFB00020),
+                color = Color(0xFF000000),
                 textAlign = TextAlign.Start,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -120,7 +120,7 @@ fun UserImageScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "choose your best photo, your profile will be visible to all members for matching 💘",
+                text = "choose your best photo, your profile will be visible to all members for matching",
                 fontSize = 16.sp,
                 color = Color.DarkGray,
                 textAlign = TextAlign.Start,
@@ -135,7 +135,7 @@ fun UserImageScreen(
                     .size(200.dp)
                     .clip(RoundedCornerShape(20.dp))
                     .background(Color.White)
-                    .border(2.dp, Color.Black, RoundedCornerShape(20.dp)) // Black border
+                    .border(0.7.dp, Color.Black, RoundedCornerShape(20.dp)) // Black border
                     .clickable { onSelectImage() },
                 contentAlignment = Alignment.Center,
 
@@ -153,7 +153,7 @@ fun UserImageScreen(
                     uiState.isLoading -> {
                         CircularProgressIndicator(
                             modifier = Modifier.size(48.dp),
-                            color = Color(0xFFB00020)
+                            color = Color(0xFF000020)
                         )
                     }
 
@@ -161,7 +161,7 @@ fun UserImageScreen(
                         Icon(
                             painter = painterResource(id = R.drawable.user),
                             contentDescription = "Profile placeholder",
-                            modifier = Modifier.size(80.dp),
+                            modifier = Modifier.size(100.dp),
                             tint = Color.Gray,
                         )
                     }
@@ -201,7 +201,7 @@ fun UserImageScreen(
                     modifier = Modifier.size(24.dp)
                 )
             } else {
-                Text("Upload Photo", fontSize = 18.sp, fontWeight = FontWeight.Normal)
+                Text("Upload Photo", fontSize = 16.sp, fontWeight = FontWeight.Normal)
             }
         }
     }

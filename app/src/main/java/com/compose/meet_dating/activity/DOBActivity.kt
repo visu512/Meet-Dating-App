@@ -8,6 +8,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -62,10 +65,10 @@ fun DOBScreen() {
         ) {
             Column {
                 Text(
-                    text = "🎂 Enter Your Date of Birth",
+                    text = "Enter Your Date of Birth",
                     fontSize = 22.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color(0xFFB00020),
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF000000),
                     textAlign = TextAlign.Start,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -154,7 +157,7 @@ fun DOBScreen() {
                 enabled = day.text.isNotEmpty() && month.text.isNotEmpty() && year.text.isNotEmpty() && !isLoading,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp),
+                    .height(55.dp),
                 shape = RoundedCornerShape(60),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Color.Black,
@@ -166,7 +169,7 @@ fun DOBScreen() {
                 if (isLoading) {
                     CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                 } else {
-                    Text(text = "Continue", fontSize = 18.sp, fontWeight = FontWeight.Normal)
+                    Text(text = "Continue", fontSize = 16.sp, fontWeight = FontWeight.Normal)
                 }
             }
         }
@@ -186,14 +189,28 @@ fun CustomOutlinedTextField(
                 onValueChange(it)
             }
         },
-        label = { Text(label, fontWeight = FontWeight.Bold, color = Color.Black) },
-        textStyle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.Black),
+        label = {
+            Text(
+                text = label,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.Black
+            )
+        },
+        textStyle = TextStyle(
+            fontSize = 18.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = Color.Black
+        ),
         modifier = Modifier.width(85.dp),
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = Color.Black,
             unfocusedBorderColor = Color.Black,
             cursorColor = Color.Black
-        )
+        ),
+        keyboardOptions = KeyboardOptions( /// keyboard only show number
+            keyboardType = KeyboardType.Number
+        ),
+        singleLine = true
     )
 }
 
