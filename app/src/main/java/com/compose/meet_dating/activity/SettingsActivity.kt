@@ -3,6 +3,7 @@ package com.compose.meet_dating.activity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.service.autofill.OnClickAction
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -103,11 +104,12 @@ fun SettingsProfileScreen() {
 
             SettingOptionCard(
                 Icons.Default.Person,
-                "Edit Profile",
-                "Update your personal information"
+                "Edit Profile ",
+                "Update your profile picture"
             ) {
-                // TODO
+//                onclikc
             }
+
 
             SettingOptionCard(Icons.Default.Check, "Verification", "Get verified to stand out") {
                 // TODO
@@ -169,7 +171,7 @@ fun SettingsProfileScreen() {
                         googleClient.signOut().addOnCompleteListener {
                             googleClient.revokeAccess().addOnCompleteListener {
                                 auth.signOut()
-                                context.startActivity(Intent(context, Login::class.java))
+                                context.startActivity(Intent(context,LoginActivity::class.java))
                                 (context as Activity).finish()
                             }
                         }

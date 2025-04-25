@@ -55,7 +55,7 @@ fun GenderSelectionScreen(context: Context) {
         ) {
             Text(
                 text = "I’m interested in...",
-                color = Color(0xFFB00020),
+                color = Color(0xFF000000),
                 fontSize = 22.sp,
                 fontWeight = FontWeight.ExtraBold,
                 textAlign = TextAlign.Start,
@@ -132,7 +132,7 @@ fun GenderSelectionScreen(context: Context) {
                 } else {
                     Text(
                         text = "Continue",
-                        fontSize = 18.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Normal
                     )
                 }

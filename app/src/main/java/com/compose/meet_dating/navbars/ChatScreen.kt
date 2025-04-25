@@ -1,6 +1,5 @@
 package com.compose.meet_dating.navbars
 
-import ChatViewModel
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,11 +25,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.compose.meet_dating.main.ChatViewModel
 import com.compose.meet_dating.main.model.ProfileData
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen(viewModel: ChatViewModel, navController: NavController.Companion) {
+fun ChatScreen(viewModel: ChatViewModel, navController: NavController) {
     val chatProfiles by viewModel.chatProfiles.collectAsState()
     val context = LocalContext.current
 

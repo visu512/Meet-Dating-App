@@ -74,24 +74,14 @@ fun LocationScreen() {
             )
 
             Text(
-                text = "This helps us find better matches near you.",
+                text = "This helps us find better matches near you. People near you are waiting to match!",
                 fontSize = 16.sp,
                 color = Color.DarkGray,
                 modifier = Modifier
                     .fillMaxWidth(),
                 textAlign = TextAlign.Start
             )
-
-            Text(
-                text = "People near you are waiting to match! 💞",
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color(0xFF6D0C0C),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp, bottom = 24.dp),
-                textAlign = TextAlign.Start
-            )
+             Spacer(modifier = Modifier.height(16.dp))
 
             Card(
                 shape = RoundedCornerShape(24.dp),
@@ -194,7 +184,7 @@ fun LocationScreen() {
                 } else {
                     Text(
                         text = "Continue",
-                        fontSize = 18.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Normal,
                         letterSpacing = 1.2.sp
                     )
